@@ -1,0 +1,25 @@
+build:
+  maxIssues: 0
+
+complexity:
+  LongMethod:
+    ignoreAnnotated: ['Composable']
+  LongParameterList:
+    ignoreAnnotated: ['Composable']
+  CyclomaticComplexMethod:
+    ignoreAnnotated: ['Composable']
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+  # Feature navigation files conventionally hold a route type plus NavGraphBuilder extensions.
+  MatchingDeclarationName:
+    excludes: ['**/*Navigation.kt']
+
+style:
+  MagicNumber:
+    ignorePropertyDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotated: ['Composable']
+  UnusedPrivateMember:
+    ignoreAnnotated: ['Preview', 'PreviewThemes']

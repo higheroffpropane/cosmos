@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Cosmos</string>
+
+    <string name="destination_apod">APOD</string>
+    <string name="destination_mars_rover">Mars</string>
+    <string name="destination_search">Search</string>
+    <string name="destination_favorites">Favorites</string>
+    <string name="destination_settings">Settings</string>
+</resources>
