@@ -29,6 +29,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
             }
 
             configureQuality()
+            configureJUnitJupiter()
         }
     }
 }

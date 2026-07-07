@@ -34,6 +34,8 @@ dependencies {
     implementation(project(":feature:favorites"))
     implementation(project(":feature:settings"))
     implementation(project(":core:designsystem"))
+    // Pulls repository implementations and their Hilt bindings into the app graph.
+    implementation(project(":core:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

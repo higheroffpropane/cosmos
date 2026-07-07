@@ -16,6 +16,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             }
 
             configureQuality()
+            configureJUnitJupiter()
         }
     }
 }

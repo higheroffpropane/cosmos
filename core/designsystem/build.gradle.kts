@@ -10,4 +10,6 @@ android {
 dependencies {
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.material3)
+    // Material3 1.4 no longer exposes the icon set transitively.
+    api(libs.androidx.compose.material.icons.core)
 }
