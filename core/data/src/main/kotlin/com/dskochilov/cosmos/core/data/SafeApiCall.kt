@@ -14,21 +14,25 @@ private const val HTTP_TOO_MANY_REQUESTS = 429
  * Coroutine cancellation is always rethrown.
  */
 // TooGenericExceptionCaught: the last catch intentionally funnels unexpected errors into AppError.Unknown.
-// SwallowedException: IOException is deliberately collapsed into the connectionless NoConnection state.
-@Suppress("TooGenericExceptionCaught", "SwallowedException")
+@Suppress("TooGenericExceptionCaught")
 suspend fun <T> safeApiCall(block: suspend () -> T): AppResult<T> = try {
     AppResult.Success(block())
 } catch (e: CancellationException) {
     throw e
-} catch (e: HttpException) {
-    AppResult.Failure(e.toHttpError())
-} catch (e: IOException) {
-    AppResult.Failure(AppError.NoConnection)
 } catch (e: Exception) {
-    AppResult.Failure(AppError.Unknown(e))
+    AppResult.Failure(e.toAppError())
 }
 
-private fun HttpException.toHttpError(): AppError = when (code()) {
-    HTTP_TOO_MANY_REQUESTS -> AppError.RateLimited
-    else -> AppError.Http(code())
+/**
+ * Maps a data-layer exception to the [AppError] taxonomy.
+ */
+fun Throwable.toAppError(): AppError = when (this) {
+    is HttpException -> when (code()) {
+        HTTP_TOO_MANY_REQUESTS -> AppError.RateLimited
+        else -> AppError.Http(code())
+    }
+
+    is IOException -> AppError.NoConnection
+
+    else -> AppError.Unknown(this)
 }

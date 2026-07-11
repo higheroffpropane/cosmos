@@ -1,0 +1,8 @@
+<resources>
+    <string name="feature_marsrover_title">Mars Rover Photos</string>
+    <string name="feature_marsrover_all_cameras">All cameras</string>
+    <string name="feature_marsrover_empty">No photos for this rover and camera yet. Try another camera.</string>
+    <string name="feature_marsrover_append_error">Couldn\'t load more photos.</string>
+    <string name="feature_marsrover_back">Back</string>
+    <string name="feature_marsrover_sol">Sol %1$d</string>
+</resources>

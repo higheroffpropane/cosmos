@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import com.dskochilov.cosmos.feature.apod.ApodRoute
 import com.dskochilov.cosmos.feature.apod.apodScreen
 import com.dskochilov.cosmos.feature.favorites.favoritesScreen
+import com.dskochilov.cosmos.feature.marsrover.MarsPhotoDetailRoute
+import com.dskochilov.cosmos.feature.marsrover.marsPhotoDetailScreen
 import com.dskochilov.cosmos.feature.marsrover.marsRoverScreen
 import com.dskochilov.cosmos.feature.search.searchScreen
 import com.dskochilov.cosmos.feature.settings.settingsScreen
@@ -19,7 +21,10 @@ fun CosmosNavHost(navController: NavHostController, modifier: Modifier = Modifie
         modifier = modifier
     ) {
         apodScreen()
-        marsRoverScreen()
+        marsRoverScreen(
+            onPhotoClick = { photoId -> navController.navigate(MarsPhotoDetailRoute(photoId)) }
+        )
+        marsPhotoDetailScreen(onBack = navController::popBackStack)
         searchScreen()
         favoritesScreen()
         settingsScreen()

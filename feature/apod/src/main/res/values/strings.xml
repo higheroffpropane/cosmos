@@ -6,9 +6,4 @@
     <string name="feature_apod_copyright">© %1$s</string>
     <string name="feature_apod_ok">OK</string>
     <string name="feature_apod_cancel">Cancel</string>
-
-    <string name="feature_apod_error_no_connection">No internet connection. Check your network and retry.</string>
-    <string name="feature_apod_error_rate_limited">NASA API rate limit reached. Try again in a minute.</string>
-    <string name="feature_apod_error_http">NASA returned an error (code %1$d).</string>
-    <string name="feature_apod_error_unknown">Something went wrong.</string>
 </resources>
