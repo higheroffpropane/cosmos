@@ -16,8 +16,13 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.retrofit.core)
+    implementation(libs.androidx.paging.common)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.okhttp)
+
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }

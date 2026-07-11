@@ -36,11 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.dskochilov.cosmos.core.common.result.AppError
 import com.dskochilov.cosmos.core.designsystem.component.ErrorState
 import com.dskochilov.cosmos.core.designsystem.component.LoadingState
 import com.dskochilov.cosmos.core.domain.apod.Apod
 import com.dskochilov.cosmos.core.domain.apod.ApodMedia
+import com.dskochilov.cosmos.core.ui.toUiMessage
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -203,12 +203,4 @@ private fun ApodMediaBlock(apod: Apod, onIntent: (ApodIntent) -> Unit, modifier:
             modifier = modifier
         )
     }
-}
-
-@Composable
-internal fun AppError.toUiMessage(): String = when (this) {
-    AppError.NoConnection -> stringResource(R.string.feature_apod_error_no_connection)
-    AppError.RateLimited -> stringResource(R.string.feature_apod_error_rate_limited)
-    is AppError.Http -> stringResource(R.string.feature_apod_error_http, code)
-    is AppError.Unknown -> stringResource(R.string.feature_apod_error_unknown)
 }
