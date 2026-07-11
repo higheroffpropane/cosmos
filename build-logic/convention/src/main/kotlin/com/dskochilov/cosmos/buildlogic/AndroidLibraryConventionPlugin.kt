@@ -17,6 +17,10 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             configureQuality()
             configureJUnitJupiter()
+
+            // Every module's test APK must contain the instrumentation runner class,
+            // or `connectedDebugAndroidTest` crashes on modules without their own androidTest deps.
+            dependencies.add("androidTestImplementation", libs.findLibrary("androidx-test-runner").get())
         }
     }
 }

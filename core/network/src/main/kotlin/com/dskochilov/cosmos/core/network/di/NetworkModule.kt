@@ -3,6 +3,7 @@ package com.dskochilov.cosmos.core.network.di
 import com.dskochilov.cosmos.core.network.ApiKeyInterceptor
 import com.dskochilov.cosmos.core.network.BuildConfig
 import com.dskochilov.cosmos.core.network.apod.NasaApodApi
+import com.dskochilov.cosmos.core.network.images.NasaImagesApi
 import com.dskochilov.cosmos.core.network.mars.NasaMarsApi
 import dagger.Module
 import dagger.Provides
@@ -67,4 +68,8 @@ internal object NetworkModule {
     @Provides
     @Singleton
     fun providesNasaMarsApi(retrofit: Retrofit): NasaMarsApi = retrofit.create(NasaMarsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providesNasaImagesApi(retrofit: Retrofit): NasaImagesApi = retrofit.create(NasaImagesApi::class.java)
 }

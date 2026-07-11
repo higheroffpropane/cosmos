@@ -17,6 +17,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             configureQuality()
             configureJUnitJupiter()
+
+            dependencies.add("androidTestImplementation", libs.findLibrary("androidx-test-runner").get())
         }
     }
 }

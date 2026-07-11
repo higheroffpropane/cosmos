@@ -1,0 +1,9 @@
+<resources>
+    <string name="feature_search_placeholder">Search NASA\'s image library</string>
+    <string name="feature_search_clear_query">Clear query</string>
+    <string name="feature_search_recent">Recent searches</string>
+    <string name="feature_search_clear_history">Clear</string>
+    <string name="feature_search_hint">Try “apollo 11”, “nebula” or “europa”.</string>
+    <string name="feature_search_empty">Nothing found. Try a different query.</string>
+    <string name="feature_search_append_error">Couldn\'t load more results.</string>
+</resources>

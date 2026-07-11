@@ -18,4 +18,8 @@ dependencies {
     implementation(libs.androidx.room.paging)
     implementation(libs.androidx.paging.common)
     ksp(libs.androidx.room.compiler)
+
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 }
