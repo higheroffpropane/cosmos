@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
+    api(libs.javax.inject)
     implementation(libs.kotlinx.coroutines.core)
 
-    testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
 }
