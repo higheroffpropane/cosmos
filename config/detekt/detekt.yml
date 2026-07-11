@@ -12,9 +12,10 @@ complexity:
 naming:
   FunctionNaming:
     ignoreAnnotated: ['Composable']
-  # Feature navigation files conventionally hold a route type plus NavGraphBuilder extensions.
+  # Navigation files hold a route type plus NavGraphBuilder extensions; Contract files
+  # hold a feature's sealed state/intent/effect types regardless of how many exist yet.
   MatchingDeclarationName:
-    excludes: ['**/*Navigation.kt']
+    excludes: ['**/*Navigation.kt', '**/*Contract.kt']
 
 style:
   MagicNumber:
