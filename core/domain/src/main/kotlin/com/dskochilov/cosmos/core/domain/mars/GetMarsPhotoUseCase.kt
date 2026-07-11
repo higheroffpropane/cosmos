@@ -7,5 +7,5 @@ import javax.inject.Inject
  * Loads a single cached Mars photo for the detail screen.
  */
 class GetMarsPhotoUseCase @Inject constructor(private val repository: MarsPhotoRepository) {
-    suspend operator fun invoke(id: Long): AppResult<MarsPhoto> = repository.getPhoto(id)
+    suspend operator fun invoke(id: String): AppResult<MarsPhoto> = repository.getPhoto(id)
 }

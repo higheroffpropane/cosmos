@@ -20,8 +20,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-private const val PHOTOS_PER_PAGE = 25
-
 @OptIn(ExperimentalPagingApi::class)
 internal class MarsPhotoRepositoryImpl @Inject constructor(
     private val api: NasaMarsApi,
@@ -31,10 +29,10 @@ internal class MarsPhotoRepositoryImpl @Inject constructor(
 
     override fun observeFeed(filter: MarsFeedFilter): Flow<PagingData<MarsPhoto>> = Pager(
         config = PagingConfig(
-            pageSize = PHOTOS_PER_PAGE,
+            pageSize = MARS_PHOTOS_PAGE_SIZE,
             enablePlaceholders = false
         ),
-        remoteMediator = MarsPhotoRemoteMediator(filter = filter, api = api, database = database),
+        remoteMediator = MarsPhotoRemoteMediator(rover = filter.rover, api = api, database = database),
         pagingSourceFactory = {
             database.marsPhotoDao().pagingSource(
                 rover = filter.rover.apiName,
@@ -43,7 +41,7 @@ internal class MarsPhotoRepositoryImpl @Inject constructor(
         }
     ).flow.map { pagingData -> pagingData.map { entity -> entity.toDomain() } }
 
-    override suspend fun getPhoto(id: Long): AppResult<MarsPhoto> = withContext(ioDispatcher) {
+    override suspend fun getPhoto(id: String): AppResult<MarsPhoto> = withContext(ioDispatcher) {
         database.marsPhotoDao().getById(id)
             ?.let { AppResult.Success(it.toDomain()) }
             ?: AppResult.Failure(AppError.Unknown())

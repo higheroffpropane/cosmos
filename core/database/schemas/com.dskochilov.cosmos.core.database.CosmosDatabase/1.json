@@ -2,16 +2,16 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b831f81008af5c7cce60168d8b414b62",
+    "identityHash": "12f77dfa824a513fb812cdf6bec57303",
     "entities": [
       {
         "tableName": "mars_photos",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `rover` TEXT NOT NULL, `cameraName` TEXT NOT NULL, `cameraFullName` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `earthDate` TEXT NOT NULL, `sol` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `rover` TEXT NOT NULL, `cameraName` TEXT NOT NULL, `cameraFullName` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `thumbnailUrl` TEXT NOT NULL, `earthDate` TEXT NOT NULL, `sol` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -35,6 +35,12 @@
           {
             "fieldPath": "imageUrl",
             "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "thumbnailUrl",
+            "columnName": "thumbnailUrl",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -72,7 +78,7 @@
       },
       {
         "tableName": "mars_remote_keys",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`queryKey` TEXT NOT NULL, `nextSol` INTEGER, `nextPage` INTEGER NOT NULL, PRIMARY KEY(`queryKey`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`queryKey` TEXT NOT NULL, `nextPage` INTEGER, PRIMARY KEY(`queryKey`))",
         "fields": [
           {
             "fieldPath": "queryKey",
@@ -81,15 +87,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "nextSol",
-            "columnName": "nextSol",
-            "affinity": "INTEGER"
-          },
-          {
             "fieldPath": "nextPage",
             "columnName": "nextPage",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -102,7 +102,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b831f81008af5c7cce60168d8b414b62')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '12f77dfa824a513fb812cdf6bec57303')"
     ]
   }
 }

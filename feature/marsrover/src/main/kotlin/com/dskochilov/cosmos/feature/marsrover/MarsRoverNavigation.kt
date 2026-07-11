@@ -9,9 +9,9 @@ import kotlinx.serialization.Serializable
 data object MarsRoverRoute
 
 @Serializable
-data class MarsPhotoDetailRoute(val photoId: Long)
+data class MarsPhotoDetailRoute(val photoId: String)
 
-fun NavGraphBuilder.marsRoverScreen(onPhotoClick: (Long) -> Unit) {
+fun NavGraphBuilder.marsRoverScreen(onPhotoClick: (String) -> Unit) {
     composable<MarsRoverRoute> {
         MarsRoverScreen(onPhotoClick = onPhotoClick)
     }

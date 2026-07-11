@@ -1,42 +1,47 @@
 package com.dskochilov.cosmos.core.data.mars
 
-import com.dskochilov.cosmos.core.network.mars.MarsCameraDto
-import com.dskochilov.cosmos.core.network.mars.MarsManifestDto
-import com.dskochilov.cosmos.core.network.mars.MarsManifestResponseDto
-import com.dskochilov.cosmos.core.network.mars.MarsPhotoDto
-import com.dskochilov.cosmos.core.network.mars.MarsPhotosResponseDto
-import com.dskochilov.cosmos.core.network.mars.MarsRoverDto
+import com.dskochilov.cosmos.core.network.mars.CuriosityImageDto
+import com.dskochilov.cosmos.core.network.mars.CuriosityPhotosResponseDto
 import com.dskochilov.cosmos.core.network.mars.NasaMarsApi
+import com.dskochilov.cosmos.core.network.mars.PerseveranceCameraDto
+import com.dskochilov.cosmos.core.network.mars.PerseveranceImageDto
+import com.dskochilov.cosmos.core.network.mars.PerseveranceImageFilesDto
+import com.dskochilov.cosmos.core.network.mars.PerseverancePhotosResponseDto
 
 /**
- * Scriptable fake: photos are served per (sol, page); everything else is empty.
+ * Scriptable fake serving Curiosity pages from [curiosityPages]; page indexes
+ * without an entry return an empty page.
  */
-internal class FakeNasaMarsApi(private val maxSol: Int, private val pages: Map<Pair<Int, Int>, List<MarsPhotoDto>>) :
-    NasaMarsApi {
+internal class FakeNasaMarsApi(private val curiosityPages: Map<Int, List<CuriosityImageDto>>) : NasaMarsApi {
 
     var photoRequests: Int = 0
         private set
 
-    override suspend fun getPhotos(rover: String, sol: Int, page: Int, camera: String?): MarsPhotosResponseDto {
+    override suspend fun getPerseverancePhotos(perPage: Int, page: Int): PerseverancePhotosResponseDto {
         photoRequests += 1
-        return MarsPhotosResponseDto(photos = pages[sol to page].orEmpty())
+        return PerseverancePhotosResponseDto(images = emptyList(), totalResults = 0)
     }
 
-    override suspend fun getManifest(rover: String): MarsManifestResponseDto = MarsManifestResponseDto(
-        photoManifest = MarsManifestDto(
-            name = rover,
-            maxSol = maxSol,
-            maxDate = "2026-07-07",
-            totalPhotos = pages.values.sumOf { it.size }.toLong()
-        )
-    )
+    override suspend fun getCuriosityPhotos(perPage: Int, page: Int): CuriosityPhotosResponseDto {
+        photoRequests += 1
+        return CuriosityPhotosResponseDto(items = curiosityPages[page].orEmpty())
+    }
 }
 
-internal fun fakePhoto(id: Long, sol: Int, camera: String = "NAVCAM") = MarsPhotoDto(
-    id = id,
+internal fun fakeCuriosityPhoto(id: String, sol: Int, instrument: String = "MAST_LEFT") = CuriosityImageDto(
+    imageId = id,
     sol = sol,
-    camera = MarsCameraDto(name = camera, fullName = "$camera full name"),
-    imageUrl = "https://mars.nasa.gov/$id.jpg",
-    earthDate = "2026-01-01",
-    rover = MarsRoverDto(name = "Curiosity")
+    instrument = instrument,
+    url = "https://mars.nasa.gov/$id.jpg",
+    httpsUrl = "https://mars.nasa.gov/$id.jpg",
+    dateTaken = "2026-07-01T00:00:00.000Z"
+)
+
+@Suppress("unused")
+internal fun fakePerseverancePhoto(id: String, sol: Int) = PerseveranceImageDto(
+    imageId = id,
+    sol = sol,
+    camera = PerseveranceCameraDto(instrument = "NAVCAM_LEFT"),
+    imageFiles = PerseveranceImageFilesDto(medium = "https://mars.nasa.gov/$id.jpg"),
+    dateTakenUtc = "2026-07-01T00:00:00.000"
 )

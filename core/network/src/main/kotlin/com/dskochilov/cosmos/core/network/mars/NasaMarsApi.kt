@@ -1,25 +1,24 @@
 package com.dskochilov.cosmos.core.network.mars
 
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
+/**
+ * Raw-image feeds hosted on mars.nasa.gov (absolute URLs override the Retrofit base URL).
+ * These are the same endpoints NASA's own mission pages use; the officially documented
+ * api.nasa.gov/mars-photos proxy is permanently offline (ADR 0006).
+ */
 interface NasaMarsApi {
-    /**
-     * Photos taken by [rover] on Martian day [sol], paged by [page] (25 per page).
-     * [camera] optionally narrows to one camera (API short name, e.g. `FHAZ`).
-     */
-    @GET("mars-photos/api/v1/rovers/{rover}/photos")
-    suspend fun getPhotos(
-        @Path("rover") rover: String,
-        @Query("sol") sol: Int,
-        @Query("page") page: Int,
-        @Query("camera") camera: String?
-    ): MarsPhotosResponseDto
 
-    /**
-     * Mission manifest; `max_sol` is the most recent Martian day with photos.
-     */
-    @GET("mars-photos/api/v1/manifests/{rover}")
-    suspend fun getManifest(@Path("rover") rover: String): MarsManifestResponseDto
+    @GET("https://mars.nasa.gov/rss/api/?feed=raw_images&category=mars2020&feedtype=json&order=sol+desc")
+    suspend fun getPerseverancePhotos(
+        @Query("num") perPage: Int,
+        @Query("page") page: Int
+    ): PerseverancePhotosResponseDto
+
+    @GET("https://mars.nasa.gov/api/v1/raw_image_items/?order=sol+desc&condition_1=msl:mission")
+    suspend fun getCuriosityPhotos(
+        @Query("per_page") perPage: Int,
+        @Query("page") page: Int
+    ): CuriosityPhotosResponseDto
 }

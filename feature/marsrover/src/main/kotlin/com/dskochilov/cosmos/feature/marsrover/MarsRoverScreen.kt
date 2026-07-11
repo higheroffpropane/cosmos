@@ -51,7 +51,7 @@ import com.dskochilov.cosmos.feature.marsrover.MarsRoverIntent.SelectRover
 
 @Composable
 internal fun MarsRoverScreen(
-    onPhotoClick: (Long) -> Unit,
+    onPhotoClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MarsRoverViewModel = hiltViewModel()
 ) {
@@ -72,7 +72,7 @@ internal fun MarsRoverContent(
     filter: MarsFeedFilter,
     photos: LazyPagingItems<MarsPhoto>,
     onIntent: (MarsRoverIntent) -> Unit,
-    onPhotoClick: (Long) -> Unit,
+    onPhotoClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -149,7 +149,11 @@ private fun CameraSelector(filter: MarsFeedFilter, onIntent: (MarsRoverIntent) -
 }
 
 @Composable
-private fun PhotoGrid(photos: LazyPagingItems<MarsPhoto>, onPhotoClick: (Long) -> Unit, modifier: Modifier = Modifier) {
+private fun PhotoGrid(
+    photos: LazyPagingItems<MarsPhoto>,
+    onPhotoClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 120.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -204,9 +208,9 @@ private fun PhotoGrid(photos: LazyPagingItems<MarsPhoto>, onPhotoClick: (Long) -
 }
 
 @Composable
-private fun MarsPhotoCell(photo: MarsPhoto, onPhotoClick: (Long) -> Unit, modifier: Modifier = Modifier) {
+private fun MarsPhotoCell(photo: MarsPhoto, onPhotoClick: (String) -> Unit, modifier: Modifier = Modifier) {
     AsyncImage(
-        model = photo.imageUrl,
+        model = photo.thumbnailUrl,
         contentDescription = photo.cameraFullName,
         contentScale = ContentScale.Crop,
         modifier = modifier

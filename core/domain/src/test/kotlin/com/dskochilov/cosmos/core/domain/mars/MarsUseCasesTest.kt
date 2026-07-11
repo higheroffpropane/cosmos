@@ -35,27 +35,28 @@ class MarsUseCasesTest {
     @Test
     fun `get photo returns repository success`() = runTest {
         val photo = MarsPhoto(
-            id = 42,
+            id = "img-42",
             rover = MarsRover.CURIOSITY,
             cameraName = "NAVCAM",
             cameraFullName = "Navigation Camera",
             imageUrl = "https://mars.nasa.gov/42.jpg",
+            thumbnailUrl = "https://mars.nasa.gov/42_320.jpg",
             earthDate = LocalDate.of(2026, 1, 1),
             sol = 4000
         )
-        coEvery { repository.getPhoto(42) } returns AppResult.Success(photo)
+        coEvery { repository.getPhoto("img-42") } returns AppResult.Success(photo)
 
-        val result = GetMarsPhotoUseCase(repository).invoke(42)
+        val result = GetMarsPhotoUseCase(repository).invoke("img-42")
 
         assertEquals(AppResult.Success(photo), result)
-        coVerify(exactly = 1) { repository.getPhoto(42) }
+        coVerify(exactly = 1) { repository.getPhoto("img-42") }
     }
 
     @Test
     fun `get photo propagates failure`() = runTest {
-        coEvery { repository.getPhoto(1) } returns AppResult.Failure(AppError.Unknown())
+        coEvery { repository.getPhoto("x") } returns AppResult.Failure(AppError.Unknown())
 
-        val result = GetMarsPhotoUseCase(repository).invoke(1)
+        val result = GetMarsPhotoUseCase(repository).invoke("x")
 
         assertEquals(AppResult.Failure(AppError.Unknown()), result)
     }

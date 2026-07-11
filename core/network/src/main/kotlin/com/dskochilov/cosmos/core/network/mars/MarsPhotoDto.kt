@@ -4,35 +4,44 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
- * Raw responses of the Mars Rover Photos API
- * (`/mars-photos/api/v1/rovers/{rover}/photos` and `/mars-photos/api/v1/manifests/{rover}`).
+ * Raw responses of the mars.nasa.gov raw-image feeds (see ADR 0006).
+ * Perseverance (mars2020) and Curiosity (MSL) use different endpoints and shapes.
  */
 @Serializable
-data class MarsPhotosResponseDto(@SerialName("photos") val photos: List<MarsPhotoDto>)
-
-@Serializable
-data class MarsPhotoDto(
-    @SerialName("id") val id: Long,
-    @SerialName("sol") val sol: Int,
-    @SerialName("camera") val camera: MarsCameraDto,
-    @SerialName("img_src") val imageUrl: String,
-    @SerialName("earth_date") val earthDate: String,
-    @SerialName("rover") val rover: MarsRoverDto
+data class PerseverancePhotosResponseDto(
+    @SerialName("images") val images: List<PerseveranceImageDto>,
+    @SerialName("total_results") val totalResults: Int
 )
 
 @Serializable
-data class MarsCameraDto(@SerialName("name") val name: String, @SerialName("full_name") val fullName: String)
+data class PerseveranceImageDto(
+    @SerialName("imageid") val imageId: String,
+    @SerialName("sol") val sol: Int,
+    @SerialName("camera") val camera: PerseveranceCameraDto,
+    @SerialName("image_files") val imageFiles: PerseveranceImageFilesDto,
+    @SerialName("date_taken_utc") val dateTakenUtc: String? = null
+)
 
 @Serializable
-data class MarsRoverDto(@SerialName("name") val name: String)
+data class PerseveranceCameraDto(@SerialName("instrument") val instrument: String)
 
 @Serializable
-data class MarsManifestResponseDto(@SerialName("photo_manifest") val photoManifest: MarsManifestDto)
+data class PerseveranceImageFilesDto(
+    @SerialName("small") val small: String? = null,
+    @SerialName("medium") val medium: String? = null,
+    @SerialName("large") val large: String? = null,
+    @SerialName("full_res") val fullRes: String? = null
+)
 
 @Serializable
-data class MarsManifestDto(
-    @SerialName("name") val name: String,
-    @SerialName("max_sol") val maxSol: Int,
-    @SerialName("max_date") val maxDate: String,
-    @SerialName("total_photos") val totalPhotos: Long
+data class CuriosityPhotosResponseDto(@SerialName("items") val items: List<CuriosityImageDto>)
+
+@Serializable
+data class CuriosityImageDto(
+    @SerialName("imageid") val imageId: String,
+    @SerialName("sol") val sol: Int,
+    @SerialName("instrument") val instrument: String,
+    @SerialName("url") val url: String,
+    @SerialName("https_url") val httpsUrl: String? = null,
+    @SerialName("date_taken") val dateTaken: String? = null
 )

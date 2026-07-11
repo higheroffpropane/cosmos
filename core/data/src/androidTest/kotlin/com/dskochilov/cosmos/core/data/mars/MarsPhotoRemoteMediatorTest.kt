@@ -11,12 +11,12 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dskochilov.cosmos.core.database.CosmosDatabase
 import com.dskochilov.cosmos.core.database.entity.MarsPhotoEntity
-import com.dskochilov.cosmos.core.domain.mars.MarsFeedFilter
 import com.dskochilov.cosmos.core.domain.mars.MarsRover
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -42,11 +42,10 @@ class MarsPhotoRemoteMediatorTest {
     }
 
     @Test
-    fun refresh_loadsFromManifestMaxSol_andStoresContinuationKey() = runTest {
+    fun refresh_loadsFirstPage_andStoresContinuationKey() = runTest {
         val api = FakeNasaMarsApi(
-            maxSol = 100,
-            pages = mapOf(
-                (100 to 1) to listOf(fakePhoto(id = 1, sol = 100), fakePhoto(id = 2, sol = 100))
+            curiosityPages = mapOf(
+                0 to listOf(fakeCuriosityPhoto(id = "a", sol = 100), fakeCuriosityPhoto(id = "b", sol = 100))
             )
         )
         val mediator = mediator(api)
@@ -56,19 +55,15 @@ class MarsPhotoRemoteMediatorTest {
         assertTrue(result is RemoteMediator.MediatorResult.Success)
         assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
         assertEquals(2, countPhotos())
-        val key = database.marsRemoteKeyDao().get("curiosity")
-        assertEquals(100, key?.nextSol)
-        assertEquals(2, key?.nextPage)
+        assertEquals(1, database.marsRemoteKeyDao().get("curiosity")?.nextPage)
     }
 
     @Test
-    fun append_walksToPreviousSol_whenCurrentSolIsExhausted() = runTest {
+    fun append_continuesFromStoredPage() = runTest {
         val api = FakeNasaMarsApi(
-            maxSol = 100,
-            pages = mapOf(
-                (100 to 1) to listOf(fakePhoto(id = 1, sol = 100)),
-                // (100, 2) is empty -> mediator must walk down; sols 99..98 empty too.
-                (97 to 1) to listOf(fakePhoto(id = 2, sol = 97))
+            curiosityPages = mapOf(
+                0 to listOf(fakeCuriosityPhoto(id = "a", sol = 100)),
+                1 to listOf(fakeCuriosityPhoto(id = "b", sol = 99))
             )
         )
         val mediator = mediator(api)
@@ -79,25 +74,22 @@ class MarsPhotoRemoteMediatorTest {
         assertTrue(result is RemoteMediator.MediatorResult.Success)
         assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
         assertEquals(2, countPhotos())
-        val key = database.marsRemoteKeyDao().get("curiosity")
-        assertEquals(97, key?.nextSol)
-        assertEquals(2, key?.nextPage)
+        assertEquals(2, database.marsRemoteKeyDao().get("curiosity")?.nextPage)
     }
 
     @Test
-    fun append_reportsEndOfPagination_whenScanBudgetFindsNothing() = runTest {
+    fun emptyPage_endsPagination_andFurtherAppendsSkipTheNetwork() = runTest {
         val api = FakeNasaMarsApi(
-            maxSol = 100,
-            pages = mapOf((100 to 1) to listOf(fakePhoto(id = 1, sol = 100)))
+            curiosityPages = mapOf(0 to listOf(fakeCuriosityPhoto(id = "a", sol = 100)))
         )
         val mediator = mediator(api)
 
         mediator.load(LoadType.REFRESH, emptyPagingState())
         val result = mediator.load(LoadType.APPEND, emptyPagingState())
 
-        assertTrue(result is RemoteMediator.MediatorResult.Success)
         assertTrue((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
-        // A further APPEND must not hit the network again.
+        assertNull(database.marsRemoteKeyDao().get("curiosity")?.nextPage)
+
         val requestsAfterEnd = api.photoRequests
         mediator.load(LoadType.APPEND, emptyPagingState())
         assertEquals(requestsAfterEnd, api.photoRequests)
@@ -106,17 +98,17 @@ class MarsPhotoRemoteMediatorTest {
     @Test
     fun refresh_clearsPreviouslyCachedPhotosForTheRover() = runTest {
         val api = FakeNasaMarsApi(
-            maxSol = 100,
-            pages = mapOf((100 to 1) to listOf(fakePhoto(id = 10, sol = 100)))
+            curiosityPages = mapOf(0 to listOf(fakeCuriosityPhoto(id = "new", sol = 100)))
         )
         database.marsPhotoDao().insertAll(
             listOf(
                 MarsPhotoEntity(
-                    id = 999,
+                    id = "stale",
                     rover = "curiosity",
-                    cameraName = "NAVCAM",
-                    cameraFullName = "Navigation Camera",
+                    cameraName = "MAST_LEFT",
+                    cameraFullName = "Mastcam Left",
                     imageUrl = "https://mars.nasa.gov/old.jpg",
+                    thumbnailUrl = "https://mars.nasa.gov/old.jpg",
                     earthDate = "2020-01-01",
                     sol = 50
                 )
@@ -126,11 +118,11 @@ class MarsPhotoRemoteMediatorTest {
         mediator(api).load(LoadType.REFRESH, emptyPagingState())
 
         assertEquals(1, countPhotos())
-        assertEquals(null, database.marsPhotoDao().getById(999))
+        assertNull(database.marsPhotoDao().getById("stale"))
     }
 
     private fun mediator(api: FakeNasaMarsApi) = MarsPhotoRemoteMediator(
-        filter = MarsFeedFilter(rover = MarsRover.CURIOSITY),
+        rover = MarsRover.CURIOSITY,
         api = api,
         database = database
     )
@@ -138,7 +130,7 @@ class MarsPhotoRemoteMediatorTest {
     private fun emptyPagingState() = PagingState<Int, MarsPhotoEntity>(
         pages = emptyList(),
         anchorPosition = null,
-        config = PagingConfig(pageSize = 25),
+        config = PagingConfig(pageSize = MARS_PHOTOS_PAGE_SIZE),
         leadingPlaceholderCount = 0
     )
 

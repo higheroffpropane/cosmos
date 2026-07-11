@@ -20,7 +20,7 @@ interface MarsPhotoDao {
     fun pagingSource(rover: String, camera: String?): PagingSource<Int, MarsPhotoEntity>
 
     @Query("SELECT * FROM mars_photos WHERE id = :id")
-    suspend fun getById(id: Long): MarsPhotoEntity?
+    suspend fun getById(id: String): MarsPhotoEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(photos: List<MarsPhotoEntity>)

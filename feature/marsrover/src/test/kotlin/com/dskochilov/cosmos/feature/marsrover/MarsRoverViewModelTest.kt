@@ -107,11 +107,12 @@ class MarsRoverViewModelTest {
     }
 
     private fun testPhoto() = MarsPhoto(
-        id = 1,
+        id = "img-1",
         rover = MarsRover.CURIOSITY,
         cameraName = "NAVCAM",
         cameraFullName = "Navigation Camera",
         imageUrl = "https://mars.nasa.gov/1.jpg",
+        thumbnailUrl = "https://mars.nasa.gov/1_320.jpg",
         earthDate = LocalDate.of(2026, 1, 1),
         sol = 4000
     )

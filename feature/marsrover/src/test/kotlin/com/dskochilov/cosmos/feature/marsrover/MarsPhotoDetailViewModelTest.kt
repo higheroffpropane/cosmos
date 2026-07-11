@@ -41,9 +41,9 @@ class MarsPhotoDetailViewModelTest {
     @Test
     fun `loads the photo for the id from navigation args`() = runTest {
         val photo = testPhoto()
-        coEvery { getMarsPhoto.invoke(42) } returns AppResult.Success(photo)
+        coEvery { getMarsPhoto.invoke("img-42") } returns AppResult.Success(photo)
 
-        val viewModel = viewModel(photoId = 42)
+        val viewModel = viewModel(photoId = "img-42")
 
         viewModel.uiState.test {
             assertEquals(MarsPhotoDetailUiState.Loading, awaitItem())
@@ -53,15 +53,15 @@ class MarsPhotoDetailViewModelTest {
 
     @Test
     fun `emits Error then recovers on Retry`() = runTest {
-        coEvery { getMarsPhoto.invoke(42) } returns AppResult.Failure(AppError.Unknown())
-        val viewModel = viewModel(photoId = 42)
+        coEvery { getMarsPhoto.invoke("img-42") } returns AppResult.Failure(AppError.Unknown())
+        val viewModel = viewModel(photoId = "img-42")
 
         viewModel.uiState.test {
             assertEquals(MarsPhotoDetailUiState.Loading, awaitItem())
             assertEquals(MarsPhotoDetailUiState.Error(AppError.Unknown()), awaitItem())
 
             val photo = testPhoto()
-            coEvery { getMarsPhoto.invoke(42) } returns AppResult.Success(photo)
+            coEvery { getMarsPhoto.invoke("img-42") } returns AppResult.Success(photo)
             viewModel.onIntent(MarsPhotoDetailIntent.Retry)
 
             assertEquals(MarsPhotoDetailUiState.Loading, awaitItem())
@@ -69,17 +69,18 @@ class MarsPhotoDetailViewModelTest {
         }
     }
 
-    private fun viewModel(photoId: Long) = MarsPhotoDetailViewModel(
+    private fun viewModel(photoId: String) = MarsPhotoDetailViewModel(
         getMarsPhoto = getMarsPhoto,
         savedStateHandle = SavedStateHandle(mapOf(MarsPhotoDetailViewModel.ARG_PHOTO_ID to photoId))
     )
 
     private fun testPhoto() = MarsPhoto(
-        id = 42,
+        id = "img-42",
         rover = MarsRover.CURIOSITY,
         cameraName = "NAVCAM",
         cameraFullName = "Navigation Camera",
         imageUrl = "https://mars.nasa.gov/42.jpg",
+        thumbnailUrl = "https://mars.nasa.gov/42_320.jpg",
         earthDate = LocalDate.of(2026, 1, 1),
         sol = 4000
     )

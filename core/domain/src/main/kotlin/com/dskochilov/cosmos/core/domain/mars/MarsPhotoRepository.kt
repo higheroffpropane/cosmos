@@ -12,5 +12,5 @@ interface MarsPhotoRepository {
     fun observeFeed(filter: MarsFeedFilter): Flow<PagingData<MarsPhoto>>
 
     /** Reads one photo from the local cache (it was cached when the feed showed it). */
-    suspend fun getPhoto(id: Long): AppResult<MarsPhoto>
+    suspend fun getPhoto(id: String): AppResult<MarsPhoto>
 }

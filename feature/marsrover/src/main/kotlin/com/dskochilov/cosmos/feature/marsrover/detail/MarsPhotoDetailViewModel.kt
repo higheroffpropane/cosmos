@@ -21,7 +21,7 @@ class MarsPhotoDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     // Type-safe navigation stores route properties by name in the SavedStateHandle.
-    private val photoId: Long = checkNotNull(savedStateHandle[ARG_PHOTO_ID])
+    private val photoId: String = checkNotNull(savedStateHandle[ARG_PHOTO_ID])
 
     private val _uiState = MutableStateFlow<MarsPhotoDetailUiState>(MarsPhotoDetailUiState.Loading)
     val uiState: StateFlow<MarsPhotoDetailUiState> = _uiState.asStateFlow()
