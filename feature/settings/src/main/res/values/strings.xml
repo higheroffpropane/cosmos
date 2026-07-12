@@ -1,0 +1,16 @@
+<resources>
+    <string name="feature_settings_title">Settings</string>
+    <string name="feature_settings_theme">Theme</string>
+    <string name="feature_settings_theme_system">System default</string>
+    <string name="feature_settings_theme_light">Light</string>
+    <string name="feature_settings_theme_dark">Dark</string>
+    <string name="feature_settings_dynamic_color">Dynamic color</string>
+    <string name="feature_settings_dynamic_color_hint">Use wallpaper-based colors (Android 12+)</string>
+    <string name="feature_settings_notifications">Notifications</string>
+    <string name="feature_settings_daily_apod">Daily astronomy picture</string>
+    <string name="feature_settings_daily_apod_hint">Get notified when a new picture is published</string>
+    <string name="feature_settings_storage">Storage</string>
+    <string name="feature_settings_clear_cache">Clear cache</string>
+    <string name="feature_settings_clear_cache_hint">Removes cached images and Mars photos. Favorites are kept.</string>
+    <string name="feature_settings_cache_cleared">Cache cleared</string>
+</resources>
