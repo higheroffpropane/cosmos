@@ -1,0 +1,225 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "2263f2df7b3410e223c997ac0c4e31e5",
+    "entities": [
+      {
+        "tableName": "mars_photos",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `rover` TEXT NOT NULL, `cameraName` TEXT NOT NULL, `cameraFullName` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `thumbnailUrl` TEXT NOT NULL, `earthDate` TEXT NOT NULL, `sol` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rover",
+            "columnName": "rover",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cameraName",
+            "columnName": "cameraName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cameraFullName",
+            "columnName": "cameraFullName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "thumbnailUrl",
+            "columnName": "thumbnailUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "earthDate",
+            "columnName": "earthDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sol",
+            "columnName": "sol",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_mars_photos_rover_cameraName",
+            "unique": false,
+            "columnNames": [
+              "rover",
+              "cameraName"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_mars_photos_rover_cameraName` ON `${TABLE_NAME}` (`rover`, `cameraName`)"
+          }
+        ]
+      },
+      {
+        "tableName": "mars_remote_keys",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`queryKey` TEXT NOT NULL, `nextPage` INTEGER, PRIMARY KEY(`queryKey`))",
+        "fields": [
+          {
+            "fieldPath": "queryKey",
+            "columnName": "queryKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextPage",
+            "columnName": "nextPage",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "queryKey"
+          ]
+        }
+      },
+      {
+        "tableName": "search_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`query` TEXT NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`query`))",
+        "fields": [
+          {
+            "fieldPath": "query",
+            "columnName": "query",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "query"
+          ]
+        }
+      },
+      {
+        "tableName": "favorites",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `title` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `thumbnailUrl` TEXT NOT NULL, `savedAt` INTEGER NOT NULL, `apodDate` TEXT, `apodExplanation` TEXT, `apodCopyright` TEXT, `apodVideoUrl` TEXT, `marsRover` TEXT, `marsCameraName` TEXT, `marsCameraFullName` TEXT, `marsEarthDate` TEXT, `marsSol` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "thumbnailUrl",
+            "columnName": "thumbnailUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "savedAt",
+            "columnName": "savedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apodDate",
+            "columnName": "apodDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "apodExplanation",
+            "columnName": "apodExplanation",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "apodCopyright",
+            "columnName": "apodCopyright",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "apodVideoUrl",
+            "columnName": "apodVideoUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "marsRover",
+            "columnName": "marsRover",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "marsCameraName",
+            "columnName": "marsCameraName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "marsCameraFullName",
+            "columnName": "marsCameraFullName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "marsEarthDate",
+            "columnName": "marsEarthDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "marsSol",
+            "columnName": "marsSol",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2263f2df7b3410e223c997ac0c4e31e5')"
+    ]
+  }
+}

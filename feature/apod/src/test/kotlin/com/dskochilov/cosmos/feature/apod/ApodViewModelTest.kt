@@ -7,12 +7,19 @@ import com.dskochilov.cosmos.core.common.result.AppResult
 import com.dskochilov.cosmos.core.domain.apod.Apod
 import com.dskochilov.cosmos.core.domain.apod.ApodMedia
 import com.dskochilov.cosmos.core.domain.apod.GetApodUseCase
+import com.dskochilov.cosmos.core.domain.favorites.FavoritesRepository
+import com.dskochilov.cosmos.core.domain.favorites.ObserveIsFavoriteUseCase
+import com.dskochilov.cosmos.core.domain.favorites.ToggleApodFavoriteUseCase
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -26,6 +33,10 @@ import org.junit.jupiter.api.Test
 class ApodViewModelTest {
 
     private val getApod = mockk<GetApodUseCase>()
+    private val favoritesRepository = mockk<FavoritesRepository> {
+        every { observeIsFavorite(any()) } returns flowOf(false)
+        coEvery { toggleApod(any()) } just Runs
+    }
     private val dispatcher = StandardTestDispatcher()
 
     @BeforeEach
@@ -43,7 +54,7 @@ class ApodViewModelTest {
         val apod = imageApod()
         coEvery { getApod.invoke(null) } returns AppResult.Success(apod)
 
-        val viewModel = ApodViewModel(getApod, SavedStateHandle())
+        val viewModel = viewModel()
 
         viewModel.uiState.test {
             assertEquals(ApodUiState.Loading, awaitItem())
@@ -54,7 +65,7 @@ class ApodViewModelTest {
     @Test
     fun `emits Error when initial load fails, then Content after successful Retry`() = runTest {
         coEvery { getApod.invoke(null) } returns AppResult.Failure(AppError.NoConnection)
-        val viewModel = ApodViewModel(getApod, SavedStateHandle())
+        val viewModel = viewModel()
 
         viewModel.uiState.test {
             assertEquals(ApodUiState.Loading, awaitItem())
@@ -76,7 +87,7 @@ class ApodViewModelTest {
         coEvery { getApod.invoke(null) } returns AppResult.Success(imageApod())
         coEvery { getApod.invoke(date) } returns AppResult.Success(imageApod(date))
 
-        val viewModel = ApodViewModel(getApod, savedStateHandle)
+        val viewModel = viewModel(savedStateHandle)
 
         viewModel.uiState.test {
             assertEquals(ApodUiState.Loading, awaitItem())
@@ -97,7 +108,7 @@ class ApodViewModelTest {
         coEvery { getApod.invoke(date) } returns AppResult.Success(imageApod(date))
         val savedStateHandle = SavedStateHandle(mapOf(ApodViewModel.KEY_SELECTED_DATE to "2015-05-05"))
 
-        val viewModel = ApodViewModel(getApod, savedStateHandle)
+        val viewModel = viewModel(savedStateHandle)
 
         viewModel.uiState.test {
             assertEquals(ApodUiState.Loading, awaitItem())
@@ -110,7 +121,7 @@ class ApodViewModelTest {
     fun `OpenVideo emits OpenUrl effect for video entries`() = runTest {
         val video = videoApod()
         coEvery { getApod.invoke(null) } returns AppResult.Success(video)
-        val viewModel = ApodViewModel(getApod, SavedStateHandle())
+        val viewModel = viewModel()
         dispatcher.scheduler.advanceUntilIdle()
 
         viewModel.effects.test {
@@ -122,7 +133,7 @@ class ApodViewModelTest {
     @Test
     fun `OpenVideo does nothing for image entries`() = runTest {
         coEvery { getApod.invoke(null) } returns AppResult.Success(imageApod())
-        val viewModel = ApodViewModel(getApod, SavedStateHandle())
+        val viewModel = viewModel()
         dispatcher.scheduler.advanceUntilIdle()
 
         viewModel.effects.test {
@@ -130,6 +141,26 @@ class ApodViewModelTest {
             expectNoEvents()
         }
     }
+
+    @Test
+    fun `ToggleFavorite delegates the shown entry to the favorites use case`() = runTest {
+        val apod = imageApod()
+        coEvery { getApod.invoke(null) } returns AppResult.Success(apod)
+        val viewModel = viewModel()
+        dispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onIntent(ApodIntent.ToggleFavorite)
+        dispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 1) { favoritesRepository.toggleApod(apod) }
+    }
+
+    private fun viewModel(savedStateHandle: SavedStateHandle = SavedStateHandle()) = ApodViewModel(
+        getApod = getApod,
+        observeIsFavorite = ObserveIsFavoriteUseCase(favoritesRepository),
+        toggleApodFavorite = ToggleApodFavoriteUseCase(favoritesRepository),
+        savedStateHandle = savedStateHandle
+    )
 
     private fun imageApod(date: LocalDate = LocalDate.of(2026, 7, 7)) = Apod(
         date = date,

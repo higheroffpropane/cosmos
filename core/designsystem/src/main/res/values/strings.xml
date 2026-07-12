@@ -1,3 +1,4 @@
 <resources>
     <string name="core_designsystem_retry">Retry</string>
+    <string name="core_designsystem_offline">Offline — showing cached data</string>
 </resources>

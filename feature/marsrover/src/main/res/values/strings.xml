@@ -5,4 +5,6 @@
     <string name="feature_marsrover_append_error">Couldn\'t load more photos.</string>
     <string name="feature_marsrover_back">Back</string>
     <string name="feature_marsrover_sol">Sol %1$d</string>
+    <string name="feature_marsrover_save_favorite">Save to favorites</string>
+    <string name="feature_marsrover_remove_favorite">Remove from favorites</string>
 </resources>

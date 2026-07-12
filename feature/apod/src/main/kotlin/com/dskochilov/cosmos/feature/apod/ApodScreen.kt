@@ -15,9 +15,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,6 +50,7 @@ import java.time.format.FormatStyle
 @Composable
 internal fun ApodScreen(modifier: Modifier = Modifier, viewModel: ApodViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
 
     LaunchedEffect(viewModel) {
@@ -61,13 +65,19 @@ internal fun ApodScreen(modifier: Modifier = Modifier, viewModel: ApodViewModel 
 
     ApodContent(
         state = uiState,
+        isFavorite = isFavorite,
         onIntent = viewModel::onIntent,
         modifier = modifier
     )
 }
 
 @Composable
-internal fun ApodContent(state: ApodUiState, onIntent: (ApodIntent) -> Unit, modifier: Modifier = Modifier) {
+internal fun ApodContent(
+    state: ApodUiState,
+    isFavorite: Boolean,
+    onIntent: (ApodIntent) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
     Column(modifier = modifier.fillMaxSize()) {
@@ -82,6 +92,21 @@ internal fun ApodContent(state: ApodUiState, onIntent: (ApodIntent) -> Unit, mod
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f)
             )
+            if (state is ApodUiState.Content) {
+                IconButton(onClick = { onIntent(ApodIntent.ToggleFavorite) }) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                        tint = if (isFavorite) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+                        contentDescription = stringResource(
+                            if (isFavorite) {
+                                R.string.feature_apod_remove_favorite
+                            } else {
+                                R.string.feature_apod_save_favorite
+                            }
+                        )
+                    )
+                }
+            }
             IconButton(onClick = { showDatePicker = true }) {
                 Icon(
                     imageVector = Icons.Rounded.DateRange,

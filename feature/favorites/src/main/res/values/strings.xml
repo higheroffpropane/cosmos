@@ -1,0 +1,7 @@
+<resources>
+    <string name="feature_favorites_title">Favorites</string>
+    <string name="feature_favorites_empty">Nothing saved yet. Tap the heart on an APOD entry or a Mars photo.</string>
+    <string name="feature_favorites_remove">Remove from favorites</string>
+    <string name="feature_favorites_subtitle_apod">APOD · %1$s</string>
+    <string name="feature_favorites_subtitle_mars">%1$s · Sol %2$d</string>
+</resources>

@@ -6,4 +6,6 @@
     <string name="feature_apod_copyright">© %1$s</string>
     <string name="feature_apod_ok">OK</string>
     <string name="feature_apod_cancel">Cancel</string>
+    <string name="feature_apod_save_favorite">Save to favorites</string>
+    <string name="feature_apod_remove_favorite">Remove from favorites</string>
 </resources>

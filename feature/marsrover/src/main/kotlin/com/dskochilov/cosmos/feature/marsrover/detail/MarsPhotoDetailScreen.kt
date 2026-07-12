@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,9 +54,11 @@ internal fun MarsPhotoDetailScreen(
     viewModel: MarsPhotoDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isFavorite by viewModel.isFavorite.collectAsStateWithLifecycle()
 
     MarsPhotoDetailContent(
         state = uiState,
+        isFavorite = isFavorite,
         onIntent = viewModel::onIntent,
         onBack = onBack,
         modifier = modifier
@@ -64,6 +68,7 @@ internal fun MarsPhotoDetailScreen(
 @Composable
 internal fun MarsPhotoDetailContent(
     state: MarsPhotoDetailUiState,
+    isFavorite: Boolean,
     onIntent: (MarsPhotoDetailIntent) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -94,6 +99,25 @@ internal fun MarsPhotoDetailContent(
                 contentDescription = stringResource(R.string.feature_marsrover_back),
                 tint = Color.White
             )
+        }
+
+        if (state is MarsPhotoDetailUiState.Content) {
+            IconButton(
+                onClick = { onIntent(MarsPhotoDetailIntent.ToggleFavorite) },
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+                    contentDescription = stringResource(
+                        if (isFavorite) {
+                            R.string.feature_marsrover_remove_favorite
+                        } else {
+                            R.string.feature_marsrover_save_favorite
+                        }
+                    ),
+                    tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.White
+                )
+            }
         }
     }
 }
