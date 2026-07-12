@@ -8,4 +8,6 @@
     <string name="feature_apod_cancel">Cancel</string>
     <string name="feature_apod_save_favorite">Save to favorites</string>
     <string name="feature_apod_remove_favorite">Remove from favorites</string>
+    <string name="feature_apod_notification_channel">Daily astronomy picture</string>
+    <string name="feature_apod_notification_title">Today\'s astronomy picture is here</string>
 </resources>

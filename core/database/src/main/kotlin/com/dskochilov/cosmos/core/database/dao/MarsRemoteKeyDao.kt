@@ -17,4 +17,7 @@ interface MarsRemoteKeyDao {
 
     @Query("DELETE FROM mars_remote_keys WHERE queryKey = :queryKey")
     suspend fun delete(queryKey: String)
+
+    @Query("DELETE FROM mars_remote_keys")
+    suspend fun clearAll()
 }

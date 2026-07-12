@@ -27,4 +27,7 @@ interface MarsPhotoDao {
 
     @Query("DELETE FROM mars_photos WHERE rover = :rover")
     suspend fun clearForRover(rover: String)
+
+    @Query("DELETE FROM mars_photos")
+    suspend fun clearAll()
 }

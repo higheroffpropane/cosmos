@@ -47,6 +47,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+    implementation(project(":core:database"))
 
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
