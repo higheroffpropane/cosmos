@@ -41,6 +41,7 @@ import coil3.compose.AsyncImage
 import com.dskochilov.cosmos.core.common.result.asAppError
 import com.dskochilov.cosmos.core.designsystem.component.ErrorState
 import com.dskochilov.cosmos.core.designsystem.component.LoadingState
+import com.dskochilov.cosmos.core.designsystem.component.OfflineBanner
 import com.dskochilov.cosmos.core.designsystem.component.ScreenPlaceholder
 import com.dskochilov.cosmos.core.domain.mars.MarsFeedFilter
 import com.dskochilov.cosmos.core.domain.mars.MarsPhoto
@@ -82,11 +83,22 @@ internal fun MarsRoverContent(
         when (val refresh = photos.loadState.refresh) {
             is LoadState.Loading -> LoadingState(modifier = Modifier.weight(1f))
 
-            is LoadState.Error -> ErrorState(
-                message = refresh.error.asAppError().toUiMessage(),
-                onRetry = photos::retry,
-                modifier = Modifier.weight(1f)
-            )
+            is LoadState.Error ->
+                if (photos.itemCount > 0) {
+                    // Refresh failed but the cache has photos: keep the feed usable offline.
+                    OfflineBanner()
+                    PhotoGrid(
+                        photos = photos,
+                        onPhotoClick = onPhotoClick,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    ErrorState(
+                        message = refresh.error.asAppError().toUiMessage(),
+                        onRetry = photos::retry,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
             is LoadState.NotLoading ->
                 if (photos.itemCount == 0) {

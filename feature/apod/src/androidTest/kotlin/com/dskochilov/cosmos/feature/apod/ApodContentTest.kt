@@ -28,7 +28,7 @@ class ApodContentTest {
     fun loadingState_showsProgressIndicator() {
         composeTestRule.setContent {
             CosmosTheme {
-                ApodContent(state = ApodUiState.Loading, onIntent = {})
+                ApodContent(state = ApodUiState.Loading, isFavorite = false, onIntent = {})
             }
         }
 
@@ -49,6 +49,7 @@ class ApodContentTest {
             CosmosTheme {
                 ApodContent(
                     state = ApodUiState.Error(AppError.NoConnection),
+                    isFavorite = false,
                     onIntent = { intent -> retried = retried || intent == ApodIntent.Retry }
                 )
             }
@@ -75,6 +76,7 @@ class ApodContentTest {
                             media = ApodMedia.Unsupported
                         )
                     ),
+                    isFavorite = false,
                     onIntent = {}
                 )
             }

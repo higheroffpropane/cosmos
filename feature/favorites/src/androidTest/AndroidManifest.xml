@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Lets Coil resolve (and gracefully fail) image loads in UI tests instead of
+         crashing the process with SecurityException. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+</manifest>

@@ -22,6 +22,8 @@ sealed interface ApodIntent {
     data object Retry : ApodIntent
 
     data object OpenVideo : ApodIntent
+
+    data object ToggleFavorite : ApodIntent
 }
 
 sealed interface ApodEffect {

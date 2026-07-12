@@ -1,9 +1,11 @@
 package com.dskochilov.cosmos.core.data.di
 
 import com.dskochilov.cosmos.core.data.apod.ApodRepositoryImpl
+import com.dskochilov.cosmos.core.data.favorites.FavoritesRepositoryImpl
 import com.dskochilov.cosmos.core.data.mars.MarsPhotoRepositoryImpl
 import com.dskochilov.cosmos.core.data.search.MediaSearchRepositoryImpl
 import com.dskochilov.cosmos.core.domain.apod.ApodRepository
+import com.dskochilov.cosmos.core.domain.favorites.FavoritesRepository
 import com.dskochilov.cosmos.core.domain.mars.MarsPhotoRepository
 import com.dskochilov.cosmos.core.domain.search.MediaSearchRepository
 import dagger.Binds
@@ -27,4 +29,8 @@ internal abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindsMediaSearchRepository(impl: MediaSearchRepositoryImpl): MediaSearchRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsFavoritesRepository(impl: FavoritesRepositoryImpl): FavoritesRepository
 }

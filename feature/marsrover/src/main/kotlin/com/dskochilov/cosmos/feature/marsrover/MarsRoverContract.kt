@@ -28,4 +28,6 @@ sealed interface MarsPhotoDetailUiState {
 
 sealed interface MarsPhotoDetailIntent {
     data object Retry : MarsPhotoDetailIntent
+
+    data object ToggleFavorite : MarsPhotoDetailIntent
 }

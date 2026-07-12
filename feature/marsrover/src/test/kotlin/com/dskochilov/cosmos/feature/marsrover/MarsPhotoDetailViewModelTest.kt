@@ -4,15 +4,23 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.dskochilov.cosmos.core.common.result.AppError
 import com.dskochilov.cosmos.core.common.result.AppResult
+import com.dskochilov.cosmos.core.domain.favorites.FavoritesRepository
+import com.dskochilov.cosmos.core.domain.favorites.ObserveIsFavoriteUseCase
+import com.dskochilov.cosmos.core.domain.favorites.ToggleMarsPhotoFavoriteUseCase
 import com.dskochilov.cosmos.core.domain.mars.GetMarsPhotoUseCase
 import com.dskochilov.cosmos.core.domain.mars.MarsPhoto
 import com.dskochilov.cosmos.core.domain.mars.MarsRover
 import com.dskochilov.cosmos.feature.marsrover.detail.MarsPhotoDetailViewModel
+import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -26,6 +34,10 @@ import org.junit.jupiter.api.Test
 class MarsPhotoDetailViewModelTest {
 
     private val getMarsPhoto = mockk<GetMarsPhotoUseCase>()
+    private val favoritesRepository = mockk<FavoritesRepository> {
+        every { observeIsFavorite(any()) } returns flowOf(false)
+        coEvery { toggleMarsPhoto(any()) } just Runs
+    }
     private val dispatcher = StandardTestDispatcher()
 
     @BeforeEach
@@ -69,8 +81,23 @@ class MarsPhotoDetailViewModelTest {
         }
     }
 
+    @Test
+    fun `ToggleFavorite delegates the shown photo to the favorites use case`() = runTest {
+        val photo = testPhoto()
+        coEvery { getMarsPhoto.invoke("img-42") } returns AppResult.Success(photo)
+        val viewModel = viewModel(photoId = "img-42")
+        dispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onIntent(MarsPhotoDetailIntent.ToggleFavorite)
+        dispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 1) { favoritesRepository.toggleMarsPhoto(photo) }
+    }
+
     private fun viewModel(photoId: String) = MarsPhotoDetailViewModel(
         getMarsPhoto = getMarsPhoto,
+        observeIsFavorite = ObserveIsFavoriteUseCase(favoritesRepository),
+        toggleMarsPhotoFavorite = ToggleMarsPhotoFavoriteUseCase(favoritesRepository),
         savedStateHandle = SavedStateHandle(mapOf(MarsPhotoDetailViewModel.ARG_PHOTO_ID to photoId))
     )
 
