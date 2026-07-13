@@ -17,6 +17,14 @@ naming:
   MatchingDeclarationName:
     excludes: ['**/*Navigation.kt', '**/*Contract.kt']
 
+# The shared-transition bridge locals are a deliberate architectural seam
+# (app provides scopes, features consume them without compile-time coupling).
+Compose:
+  CompositionLocalAllowlist:
+    allowedCompositionLocals:
+      - LocalSharedTransitionScope
+      - LocalNavAnimatedVisibilityScope
+
 style:
   MagicNumber:
     ignorePropertyDeclaration: true
