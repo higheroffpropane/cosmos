@@ -17,12 +17,15 @@ android {
 
     buildTypes {
         release {
-            // R8/shrinking is configured in Phase 6 (release polish).
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // Debug-signed so the R8 build can be installed locally; replace with a
+            // real keystore for Play distribution (see README, "Release builds").
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
@@ -34,6 +37,7 @@ dependencies {
     implementation(project(":feature:favorites"))
     implementation(project(":feature:settings"))
     implementation(project(":core:designsystem"))
+    implementation(project(":core:ui"))
     // Pulls repository implementations and their Hilt bindings into the app graph.
     implementation(project(":core:data"))
 

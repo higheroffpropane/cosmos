@@ -67,6 +67,8 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
+# Referenced by Dagger-generated components; not pulled transitively in release builds.
+errorprone-annotations = { group = "com.google.errorprone", name = "error_prone_annotations", version = "2.50.0" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }

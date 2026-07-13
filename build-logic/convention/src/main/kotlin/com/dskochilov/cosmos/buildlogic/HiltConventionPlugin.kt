@@ -13,6 +13,8 @@ class HiltConventionPlugin : Plugin<Project> {
             dependencies {
                 add("implementation", libs.findLibrary("hilt-android").get())
                 add("ksp", libs.findLibrary("hilt-compiler").get())
+                // Dagger-generated components reference these annotations directly.
+                add("compileOnly", libs.findLibrary("errorprone-annotations").get())
             }
         }
     }

@@ -37,6 +37,7 @@ import coil3.compose.AsyncImage
 import com.dskochilov.cosmos.core.designsystem.component.ErrorState
 import com.dskochilov.cosmos.core.designsystem.component.LoadingState
 import com.dskochilov.cosmos.core.domain.mars.MarsPhoto
+import com.dskochilov.cosmos.core.ui.cosmosSharedBounds
 import com.dskochilov.cosmos.core.ui.toUiMessage
 import com.dskochilov.cosmos.feature.marsrover.MarsPhotoDetailIntent
 import com.dskochilov.cosmos.feature.marsrover.MarsPhotoDetailUiState
@@ -138,6 +139,7 @@ private fun ZoomablePhoto(photo: MarsPhoto, modifier: Modifier = Modifier) {
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .fillMaxSize()
+                .cosmosSharedBounds(key = "mars-photo-${photo.id}")
                 .transformable(transformableState)
                 .graphicsLayer {
                     scaleX = scale

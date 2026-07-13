@@ -46,6 +46,7 @@ import com.dskochilov.cosmos.core.designsystem.component.ScreenPlaceholder
 import com.dskochilov.cosmos.core.domain.mars.MarsFeedFilter
 import com.dskochilov.cosmos.core.domain.mars.MarsPhoto
 import com.dskochilov.cosmos.core.domain.mars.MarsRover
+import com.dskochilov.cosmos.core.ui.cosmosSharedBounds
 import com.dskochilov.cosmos.core.ui.toUiMessage
 import com.dskochilov.cosmos.feature.marsrover.MarsRoverIntent.SelectCamera
 import com.dskochilov.cosmos.feature.marsrover.MarsRoverIntent.SelectRover
@@ -228,6 +229,7 @@ private fun MarsPhotoCell(photo: MarsPhoto, onPhotoClick: (String) -> Unit, modi
         modifier = modifier
             .aspectRatio(1f)
             .clipToBounds()
+            .cosmosSharedBounds(key = "mars-photo-${photo.id}")
             .clickable { onPhotoClick(photo.id) }
     )
 }
