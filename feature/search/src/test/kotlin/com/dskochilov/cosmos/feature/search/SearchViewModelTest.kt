@@ -130,6 +130,24 @@ class SearchViewModelTest {
         coVerify(exactly = 1) { repository.clearSearchHistory() }
     }
 
+    @Test
+    fun `clearing a query allows searching for the same term from history again`() = runTest {
+        val viewModel = viewModel()
+        val collector = launch { viewModel.results.collect { } }
+        runCurrent()
+
+        viewModel.onIntent(SearchIntent.QueryChanged("apollo"))
+        advanceTimeBy(SEARCH_DEBOUNCE_MS + 1)
+        viewModel.onIntent(SearchIntent.ClearQuery)
+        runCurrent()
+        viewModel.onIntent(SearchIntent.HistorySelected("apollo"))
+        advanceTimeBy(SEARCH_DEBOUNCE_MS + 1)
+
+        verify(exactly = 2) { repository.search("apollo") }
+        coVerify(exactly = 0) { repository.saveSearch("") }
+        collector.cancel()
+    }
+
     private fun viewModel(savedStateHandle: SavedStateHandle = SavedStateHandle()) = SearchViewModel(
         searchMedia = SearchMediaUseCase(repository),
         observeSearchHistory = ObserveSearchHistoryUseCase(repository),

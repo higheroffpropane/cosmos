@@ -19,10 +19,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -51,12 +50,17 @@ class SearchViewModel @Inject constructor(
      */
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val results: Flow<PagingData<MediaItem>> = query
-        .debounce(SEARCH_DEBOUNCE_MS)
         .map { it.trim() }
-        .filter { it.length >= MIN_QUERY_LENGTH }
         .distinctUntilChanged()
-        .onEach { saveSearchQuery(it) }
-        .flatMapLatest { searchMedia(it) }
+        .debounce { if (it.length < MIN_QUERY_LENGTH) 0L else SEARCH_DEBOUNCE_MS }
+        .flatMapLatest { term ->
+            if (term.length < MIN_QUERY_LENGTH) {
+                flowOf(PagingData.empty())
+            } else {
+                saveSearchQuery(term)
+                searchMedia(term)
+            }
+        }
         .cachedIn(viewModelScope)
 
     fun onIntent(intent: SearchIntent) {

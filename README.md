@@ -1,102 +1,88 @@
-# Cosmos 🔭
+<div align="center">
+
+# Cosmos
+
+**A pocket atlas of NASA photography for Android**
+
+Explore a day in the astronomy archive, follow a rover's camera across Mars, or keep a collection of your favourite discoveries.
 
 [![CI](https://github.com/higheroffpropane/cosmos/actions/workflows/ci.yml/badge.svg)](https://github.com/higheroffpropane/cosmos/actions/workflows/ci.yml)
+&nbsp; **Android 8.0+** · **Kotlin** · **Jetpack Compose**
 
-A NASA data explorer for Android, built as a portfolio project on the modern (2026) Android stack:
-100% Jetpack Compose, Clean Architecture + MVI, multi-module with convention plugins, offline-first
-where it matters.
+</div>
 
-| APOD | Mars Rover feed | Photo detail | Favorites | Settings |
-|---|---|---|---|---|
-| ![APOD](docs/screenshots/apod.png) | ![Mars feed](docs/screenshots/mars_feed.png) | ![Detail](docs/screenshots/mars_detail.png) | ![Favorites](docs/screenshots/favorites.png) | ![Settings](docs/screenshots/settings.png) |
+| Astronomy Picture of the Day | Rover gallery | Photo detail |
+|:---:|:---:|:---:|
+| ![APOD screen with the selected day's image and explanation](docs/screenshots/apod.png) | ![Two-column Mars photo feed with rover and camera filters](docs/screenshots/mars_feed.png) | ![Selected rover photograph and its mission information](docs/screenshots/mars_detail.png) |
 
-## Features
+## Explore the app
 
-- **APOD** — today's Astronomy Picture of the Day with a date picker constrained to the archive
-  (1995-06-16 → today); video entries show a thumbnail and open externally
-- **Mars Rover photos** — infinite feed for Curiosity and Perseverance (Paging 3 +
-  RemoteMediator, Room as single source of truth), camera filters, pinch-to-zoom detail with a
-  shared-element transition
-- **Media library search** — debounced search over `images-api.nasa.gov` with paginated results
-  and Room-backed search history
-- **Favorites** — save APOD entries and Mars photos; fully viewable offline including images
-  (prefetched into Coil's disk cache on save)
-- **Daily APOD notification** — WorkManager-scheduled, network-constrained with exponential
-  backoff, respecting the POST_NOTIFICATIONS runtime permission
-- **Settings** — theme (system/light/dark), dynamic color, notification toggle, clear cache —
-  persisted in DataStore
-- **Offline behavior** — feeds show cached data under an offline banner when refresh fails;
-  favorites always work offline
+- **Astronomy Picture of the Day.** Browse dates back to 16 June 1995. Read the explanation alongside the image, or open a video entry in an external player.
+- **Mars rovers.** Browse Curiosity and Perseverance photographs, filter by camera, and zoom in on a frame. The gallery reads from Room while Paging fetches more photos.
+- **NASA Image Library.** Search after a short typing pause, load more matches as you scroll, and revisit recent searches. Clearing the field returns to history.
+- **Favorites.** Bookmark a rover image or an APOD entry. Saved titles and details live in Room. Images are prefetched to Coil's disk cache and can be viewed offline while cached.
+- **Daily reminder.** Enable a WorkManager notification for APOD, switch between light, dark and system themes, or clear cached media in Settings.
 
-## Tech stack
+<details>
+<summary>View the collection and settings screens</summary>
 
-| Area | Choice |
-|---|---|
-| Language / build | Kotlin 2.3, Gradle 9.4, AGP 9.2 (built-in Kotlin), version catalog, convention plugins in `build-logic/`, KSP |
-| UI | Jetpack Compose + Material 3, edge-to-edge, dynamic color, adaptive navigation (bottom bar ↔ rail), shared-element transitions |
-| Architecture | Clean Architecture + MVI (sealed state / intents / effects), unidirectional data flow |
-| DI | Hilt (KSP), `@HiltWorker` for WorkManager |
-| Async | Coroutines + Flow only |
-| Network | Retrofit 3 + OkHttp 5 + kotlinx.serialization; API key via OkHttp interceptor from `local.properties`/CI secret |
-| Local | Room (v3, auto-migrations, exported schemas), DataStore Preferences |
-| Pagination | Paging 3 — RemoteMediator for the Mars feed, plain PagingSource for search |
-| Images | Coil 3, 256 MB disk cache, disk-only prefetch for favorites |
-| Quality | detekt + ktlint (both with Compose rule sets), JUnit 5, MockK, Turbine, Compose UI tests, GitHub Actions CI |
+| Saved entries | Settings |
+|:---:|:---:|
+| <img src="docs/screenshots/favorites.png" width="250" alt="Bookmarks from APOD and the Mars gallery"> | <img src="docs/screenshots/settings.png" width="250" alt="Appearance, daily notification and cache controls"> |
 
-## Architecture
+</details>
 
-```mermaid
-graph TD
-  app --> feature_apod[feature:apod] & feature_marsrover[feature:marsrover] & feature_search[feature:search] & feature_favorites[feature:favorites] & feature_settings[feature:settings]
-  feature_apod & feature_marsrover & feature_search & feature_favorites & feature_settings --> designsystem[core:designsystem] & ui[core:ui] & domain[core:domain]
-  app --> data[core:data]
-  data --> domain & network[core:network] & database[core:database] & datastore[core:datastore]
-  domain --> common[core:common]
-  network & database & datastore --> common
+## Run locally
+
+Use **JDK 21** and **Android SDK Platform 37**. The app runs on **API 26 or later**. Open the project in Android Studio and select the `app` run configuration, or use the Gradle wrapper from the repository root.
+
+```sh
+./gradlew :app:assembleDebug
+./gradlew :app:installDebug    # With a device or emulator connected
 ```
 
-- Features never depend on other features; cross-feature capabilities (e.g. the settings screen
-  scheduling the APOD worker) go through interfaces in `core:domain`, wired by Hilt at the app level.
-- `core:domain` and `core:common` are pure JVM modules.
-- DTOs, Room entities and domain models are separate classes with explicit, unit-tested mappers.
-- Repositories return domain models in a typed `AppResult`/`AppError`; raw exceptions never cross
-  the domain boundary (Paging errors travel as `AppErrorException`).
-- Every screen has explicit Loading / Content / Empty / Error states with retry.
+On Windows, replace `./gradlew` with `.\gradlew.bat`. The debug APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
 
-## Testing
+**Data access.** The Mars gallery and Image Library search work without a NASA key. For APOD and its daily notification, obtain a [NASA API key](https://api.nasa.gov/) and add this line to your local `local.properties` file, alongside any Android SDK settings. Then rebuild.
 
-103 tests: 76 JVM unit tests (use cases, repositories, mappers, safe-call error mapping, ViewModel
-MVI transitions with virtual-time debounce coverage) and 27 instrumented tests (RemoteMediator with
-in-memory Room + fake API, DAOs, the WorkManager worker, Compose UI state rendering per feature).
-CI runs ktlint, detekt, Android lint, unit tests and `assembleDebug` on every PR.
+```properties
+NASA_API_KEY=your_key_here
+```
 
-## Building
+The build also reads the `NASA_API_KEY` environment variable. The project ignores `local.properties`. The configured key is compiled into the client, so use a development key when sharing builds.
 
-1. Get a free API key at [api.nasa.gov](https://api.nasa.gov).
-2. Add it to `local.properties` (never committed): `NASA_API_KEY="your_key"`
-   — CI/other environments can use a `NASA_API_KEY` environment variable instead.
-3. `./gradlew :app:assembleDebug` to build, `./gradlew check` for the full quality gate.
+## Inside the project
 
-### Release builds
+```mermaid
+flowchart LR
+    A[Android app] --> F[Compose features]
+    F --> U[UI and design system]
+    F --> D[Domain use cases]
+    A --> R[Data repositories]
+    R --> D
+    R --> N[Retrofit and OkHttp]
+    R --> DB[Room]
+    D --> C[Common types]
+    A --> P[DataStore preferences via DI]
+```
 
-`./gradlew :app:assembleRelease` produces an R8-minified, resource-shrunk build (~2.3 MB vs
-~15 MB debug). It is debug-signed for local testing; for a Play-ready AAB create a keystore,
-declare a `release` signing config (keystore path/passwords via `local.properties` or CI
-secrets — never committed), point `buildTypes.release.signingConfig` at it, and run
-`./gradlew :app:bundleRelease`.
+| Layer | Implementation | An example in the code |
+|:---|:---|:---|
+| Presentation | Compose, Material 3, typed navigation, ViewModels, StateFlow | [Debounced media search and saved query state](feature/search/src/main/kotlin/com/dskochilov/cosmos/feature/search/SearchViewModel.kt) |
+| Data | Retrofit, OkHttp, kotlinx.serialization, Room, Paging 3 | [RemoteMediator for the rover feed](core/data/src/main/kotlin/com/dskochilov/cosmos/core/data/mars/MarsPhotoRemoteMediator.kt) |
+| Domain | Kotlin/JVM repository contracts and use cases | [Favorite operations shared by features](core/domain/src/main/kotlin/com/dskochilov/cosmos/core/domain/favorites/FavoritesUseCases.kt) |
+| Android services | Hilt, WorkManager, Coil, Preferences DataStore | [Daily APOD worker](feature/apod/src/main/kotlin/com/dskochilov/cosmos/feature/apod/work/DailyApodWorker.kt) |
+| Build | Gradle Kotlin DSL, version catalog, convention plugins, KSP | [Shared build conventions](build-logic/convention/src/main/kotlin/com/dskochilov/cosmos/buildlogic) |
 
-## Decisions & trade-offs
+**Two design choices shape the experience.** NASA mission-site feeds supply rover images. Their undocumented response formats are isolated in the network and data layers. Favorites store a snapshot of each entry, which keeps the collection readable even when its source is unavailable. Clearing the cache can remove the saved image bytes while preserving the entry. [Mars data source decision](docs/adr/0006-mars-data-source-pivot.md) · [Offline storage decision](docs/adr/0007-favorites-and-offline-strategy.md) · [All architecture decisions](docs/adr/)
 
-Recorded as ADRs in [docs/adr/](docs/adr/):
+## Verify a change
 
-- [0001](docs/adr/0001-multi-module-structure-with-convention-plugins.md) — multi-module structure and convention plugins
-- [0002](docs/adr/0002-agp9-built-in-kotlin.md) — AGP 9 built-in Kotlin and version alignment
-- [0003](docs/adr/0003-static-analysis-detekt-plus-ktlint.md) — detekt + ktlint side by side
-- [0004](docs/adr/0004-mvi-presentation-pattern.md) — the MVI contract every feature follows
-- [0005](docs/adr/0005-remotemediator-strategy-and-paging-in-domain.md) — RemoteMediator strategy; paging-common in the domain layer
-- [0006](docs/adr/0006-mars-data-source-pivot.md) — pivot to live mars.nasa.gov feeds after the official Mars photos API died
-- [0007](docs/adr/0007-favorites-and-offline-strategy.md) — favorites storage and offline image strategy
+```sh
+./gradlew check                 # JVM tests, Android lint, ktlint and detekt
+./gradlew connectedDebugAndroidTest   # Device or emulator required
+```
 
-Notable trade-offs: the Mars feed uses NASA's undocumented-but-stable mission-site APIs (the
-documented one is permanently offline — ADR 0006); favorites are denormalized snapshots (NASA
-archive entries are effectively immutable); baseline profiles are left as future work.
+JVM tests cover state transitions, mappings, repositories and paging. Instrumented tests exercise Room, the rover mediator, the daily worker and Compose screens. The [CI workflow](.github/workflows/ci.yml) runs the static checks and JVM tests, then assembles a debug APK.
+
+For local release testing, `./gradlew :app:assembleRelease` builds an R8-minified APK signed with the debug key. Configure a separate release signing key before distribution.
