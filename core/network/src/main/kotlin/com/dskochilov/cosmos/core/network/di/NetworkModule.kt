@@ -46,6 +46,7 @@ internal object NetworkModule {
                 addInterceptor(
                     HttpLoggingInterceptor().apply {
                         // BODY would dump full APOD explanations; BASIC is enough to debug calls.
+                        redactQueryParams("api_key")
                         level = HttpLoggingInterceptor.Level.BASIC
                     }
                 )

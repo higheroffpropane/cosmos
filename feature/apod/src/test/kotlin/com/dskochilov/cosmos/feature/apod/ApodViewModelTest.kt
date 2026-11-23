@@ -17,6 +17,7 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import java.time.LocalDate
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -153,6 +154,23 @@ class ApodViewModelTest {
         dispatcher.scheduler.advanceUntilIdle()
 
         coVerify(exactly = 1) { favoritesRepository.toggleApod(apod) }
+    }
+
+    @Test
+    fun `late response for a previous date cannot replace the selected entry`() = runTest {
+        val pending = CompletableDeferred<AppResult<Apod>>()
+        val selected = LocalDate.of(2012, 6, 5)
+        coEvery { getApod.invoke(null) } coAnswers { pending.await() }
+        coEvery { getApod.invoke(selected) } returns AppResult.Success(imageApod(selected))
+        val viewModel = viewModel()
+        dispatcher.scheduler.runCurrent()
+
+        viewModel.onIntent(ApodIntent.SelectDate(selected))
+        dispatcher.scheduler.runCurrent()
+        pending.complete(AppResult.Success(imageApod()))
+        dispatcher.scheduler.runCurrent()
+
+        assertEquals(ApodUiState.Content(imageApod(selected)), viewModel.uiState.value)
     }
 
     private fun viewModel(savedStateHandle: SavedStateHandle = SavedStateHandle()) = ApodViewModel(

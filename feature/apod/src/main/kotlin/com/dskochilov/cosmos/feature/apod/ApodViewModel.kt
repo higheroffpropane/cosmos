@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,6 +51,8 @@ class ApodViewModel @Inject constructor(
     private val _effects = Channel<ApodEffect>(capacity = Channel.BUFFERED)
     val effects: Flow<ApodEffect> = _effects.receiveAsFlow()
 
+    private var loadJob: Job? = null
+
     init {
         loadApod()
     }
@@ -71,7 +74,8 @@ class ApodViewModel @Inject constructor(
     }
 
     private fun loadApod() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _uiState.value = ApodUiState.Loading
             val date = savedStateHandle.get<String>(KEY_SELECTED_DATE)?.let(LocalDate::parse)
             _uiState.value = getApod(date).fold(
